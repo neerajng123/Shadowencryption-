@@ -482,7 +482,7 @@ html_content = """
         </main>
 
         <footer>
-            <p>© 2025 ShadowCrypt. All client-side encryption. No data transmission.</p>
+            <p>© 2025 ShadowCrypt. All client-side encryption. No data transmission and created NGX.</p>
             <div class="security-note">
                 <i class="fas fa-shield-check"></i>
                 <span>This tool uses custom encryption (character shifting + Base64). For maximum security, combine with other methods.</span>
