@@ -1,9 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Add these PWA meta tags right after <title> -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ShadowCrypt | Secure Client-Side Encryption</title>
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#161625">
+    
+    <!-- iOS Specific -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ShadowCrypt">
+    <link rel="apple-touch-icon" href="/icon-192x192.png">
+    
+    <!-- Android/Windows -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="ShadowCrypt">
+    
+    <!-- Continue with your existing code... -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -595,6 +612,72 @@
             // Optional: Add sample text for demonstration
             // document.getElementById('encryptInput').value = 'Try encrypting this secret message!';
         });
-    </script>
+    
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/sw.js')
+                .then(function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                })
+                .catch(function(error) {
+                    console.log('ServiceWorker registration failed: ', error);
+                });
+        });
+    }
+
+    // Detect if app is running in standalone mode
+    function isRunningStandalone() {
+        return (window.matchMedia('(display-mode: standalone)').matches) || 
+               (window.navigator.standalone) || 
+               (document.referrer.includes('android-app://'));
+    }
+
+    // Optional: Show install prompt for PWA
+    let deferredPrompt;
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        e.preventDefault();
+        // Stash the event so it can be triggered later
+        deferredPrompt = e;
+        
+        // Optional: Show your own custom install button
+        // showInstallButton();
+    });
+    
+    // Optional function to show custom install button
+    function showInstallButton() {
+        const installBtn = document.createElement('button');
+        installBtn.innerHTML = '<i class="fas fa-download"></i> Install App';
+        installBtn.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #6d28d9 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        `;
+        installBtn.onclick = () => {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted install');
+                }
+                deferredPrompt = null;
+                installBtn.remove();
+            });
+        };
+        document.body.appendChild(installBtn);
+    }
+</script>
 </body>
 </html>
